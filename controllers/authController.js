@@ -3,12 +3,37 @@ import User from "../models/user.js";
 import generateToken from "../utils/generateToken.js";
 
 /**
- * @desc  Auth user & get token
- * @route POST /api/login
- * @return  json
+ * @swagger
+ * /login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Login User
+ *     operationId: login
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *        - in: query
+ *          name: email
+ *          description: "Your email"
+ *          type: string
+ *        - in: query
+ *          name: password
+ *          description: "Your password"
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       422:
+ *         description: Unprocessable Entity
+ *       401:
+ *         description: Unauthenticated
  */
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.query;
+  console.log(req);
 
   const user = await User.findOne({ email });
 
@@ -19,7 +44,7 @@ const login = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: token
+      token: token,
     });
   } else {
     res.status(401);
@@ -28,17 +53,42 @@ const login = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc  Register a new user
- * @route POST /api/register
- * @return  json
+ * @swagger
+ * /register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Register New User
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *        - in: query
+ *          name: name
+ *          description: User name
+ *          type: string
+ *        - in: query
+ *          name: email
+ *          description: User email address
+ *          type: string
+ *        - in: query
+ *          name: password
+ *          description: Your password
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       422:
+ *         description: Unprocessable Entity
+ *       401:
+ *         description: Unauthenticated
  */
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.query;
   const userExists = await User.findOne({ email });
 
   if (userExists) {
     res.status(400);
-    throw new Error("User already exists");
+    throw new Error("User with this email already exists");
   }
 
   const user = await User.create({
@@ -60,9 +110,21 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Logout user / clear cookie
- * @route   POST /api/logout
- * @access  Public
+ * @swagger
+ * /logout:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Logout user
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       422:
+ *         description: Unprocessable Entity
+ *       401:
+ *         description: Unauthenticated
  */
 const logoutUser = (req, res) => {
   if (req.user) {
