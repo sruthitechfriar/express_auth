@@ -3,7 +3,7 @@ import User from "../models/user.js";
 
 /**
  * @swagger
- * /users/get_profile:
+ * /users/get:
  *   get:
  *     tags:
  *       - Users
@@ -20,11 +20,9 @@ import User from "../models/user.js";
  */
 const getUserProfile = asyncHandler(async (req, res) => {
   if (req.user) {
-    res.json({
-      _id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-    });
+    const message = "User profile details.";
+    const user = req.user;
+    res.json({ message, user });
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -33,7 +31,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 /**
  * @swagger
- * /users/update_profile:
+ * /users/update:
  *   post:
  *     tags:
  *       - Users
@@ -73,16 +71,70 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 
     const updatedUser = await user.save();
-
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-    });
+    const message = "User profiles updated successfully.";
+    res.json({ message, updatedUser });
   } else {
     res.status(404);
     throw new Error("User not found");
   }
 });
 
-export { getUserProfile, updateUserProfile };
+/**
+ * @swagger
+ * /users/delete:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Delete user with email id
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *        - in: query
+ *          name: email
+ *          description: User email address
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       422:
+ *         description: Unprocessable Entity
+ *       401:
+ *         description: Unauthenticated
+ */
+const deleteUser = asyncHandler(async (req, res) => {
+  const { email } = req.query;
+  const user = await User.findOne({ email });
+  if (user) {
+    const deleted = await User.deleteOne({ email });
+    if (deleted) {
+      res.json({ message: "User profile deleted successfully" });
+    }
+  } else {
+    res.status(404);
+    throw new Error("User with this email not found");
+  }
+});
+
+/**
+ * @swagger
+ * /users/list:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: List users
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       422:
+ *         description: Unprocessable Entity
+ *       401:
+ *         description: Unauthenticated
+ */
+const listUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  const message = "User profiles retrieved successfully";
+  res.json({ message, users });
+});
+export { getUserProfile, updateUserProfile, deleteUser, listUsers };

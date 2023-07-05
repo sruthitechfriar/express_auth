@@ -39,11 +39,11 @@ const login = asyncHandler(async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     const token = generateToken(res, user._id);
+    const message = "Logged In Successful.";
 
     res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
+      message: message,
+      user: user,
       token: token,
     });
   } else {
@@ -98,10 +98,10 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    const message = "User Created Successfully.";
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
+      message: message,
+      user: user,
     });
   } else {
     res.status(400);
