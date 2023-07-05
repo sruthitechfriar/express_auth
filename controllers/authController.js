@@ -33,22 +33,21 @@ import generateToken from "../utils/generateToken.js";
  */
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.query;
-  console.log(req);
-
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
     const token = generateToken(res, user._id);
-    const message = "Logged In Successful.";
-
     res.json({
-      message: message,
-      user: user,
-      token: token,
+      status: true,
+      message: "Logged In Successful.",
+      data: { user: user, token: token },
     });
   } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+    res.json({
+      status: false,
+      message: "Invalid email or password.",
+      data: [],
+    });
   }
 });
 
@@ -74,6 +73,10 @@ const login = asyncHandler(async (req, res) => {
  *          name: password
  *          description: Your password
  *          type: string
+ *        - in: query
+ *          name: password_confirmation
+ *          description: Confrim Your password
+ *          type: string
  *     responses:
  *       200:
  *         description: Success
@@ -85,12 +88,13 @@ const login = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.query;
   const userExists = await User.findOne({ email });
-
   if (userExists) {
-    res.status(400);
-    throw new Error("User with this email already exists");
+    res.json({
+      status: false,
+      message: "User with this email already exists",
+      data: [],
+    });
   }
-
   const user = await User.create({
     name,
     email,
@@ -98,14 +102,17 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    const message = "User Created Successfully.";
-    res.status(201).json({
-      message: message,
-      user: user,
+    res.json({
+      status: true,
+      message: "User Created Successfully.",
+      data: user,
     });
   } else {
-    res.status(400);
-    throw new Error("Invalid user data");
+    res.json({
+      status: false,
+      message: "Invalid user data.",
+      data: [],
+    });
   }
 });
 
@@ -132,10 +139,17 @@ const logoutUser = (req, res) => {
       httpOnly: true,
       expires: new Date(0),
     });
-    res.status(200).json({ message: "Logged out successfully" });
+    res.json({
+      status: true,
+      message: "Logged out successfully",
+      data: [],
+    });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.json({
+      status: false,
+      message: "User not found.",
+      data: [],
+    });
   }
 };
 

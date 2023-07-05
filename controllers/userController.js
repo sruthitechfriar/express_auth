@@ -20,12 +20,17 @@ import User from "../models/user.js";
  */
 const getUserProfile = asyncHandler(async (req, res) => {
   if (req.user) {
-    const message = "User profile details.";
-    const user = req.user;
-    res.json({ message, user });
+    res.json({
+      status: true,
+      message: "User profile details.",
+      data: req.user,
+    });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.json({
+      status: false,
+      message: "User not found",
+      data: [],
+    });
   }
 });
 
@@ -59,25 +64,32 @@ const getUserProfile = asyncHandler(async (req, res) => {
  *       401:
  *         description: Unauthenticated
  */
-const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+const updateUserProfile = asyncHandler(
+  async (req, res) => {
+    const user = await User.findById(req.user._id);
 
-  if (user) {
-    user.name = req.query.name || user.name;
-    user.email = req.query.email || user.email;
+    if (user) {
+      user.name = req.query.name || user.name;
+      user.email = req.query.email || user.email;
 
-    if (req.query.password) {
-      user.password = req.query.password;
+      if (req.query.password) {
+        user.password = req.query.password;
+      }
+      const updatedUser = await user.save();
+      res.json({
+        status: true,
+        message: "User profiles updated successfully.",
+        data: updatedUser,
+      });
+    } else {
+      res.json({
+        status: false,
+        message: "User not found",
+        data: [],
+      });
     }
-
-    const updatedUser = await user.save();
-    const message = "User profiles updated successfully.";
-    res.json({ message, updatedUser });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
   }
-});
+);
 
 /**
  * @swagger
@@ -107,11 +119,18 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (user) {
     const deleted = await User.deleteOne({ email });
     if (deleted) {
-      res.json({ message: "User profile deleted successfully" });
+      res.json({
+        status: true,
+        message: "User profile deleted successfully.",
+        data: [],
+      });
     }
   } else {
-    res.status(404);
-    throw new Error("User with this email not found");
+    res.json({
+      status: false,
+      message: "User with this email not found",
+      data: [],
+    });
   }
 });
 
@@ -134,7 +153,10 @@ const deleteUser = asyncHandler(async (req, res) => {
  */
 const listUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
-  const message = "User profiles retrieved successfully";
-  res.json({ message, users });
+  res.json({
+    status: true,
+    message: "User profiles retrieved successfully.",
+    data: users,
+  });
 });
 export { getUserProfile, updateUserProfile, deleteUser, listUsers };
