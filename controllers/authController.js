@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/user.js";
 import generateToken from "../utils/generateToken.js";
+import { EventEmitter } from "events";
 
 /**
  * @swagger
@@ -102,6 +103,24 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+
+    // Initializing event emitter instances
+    var eventEmitter = new EventEmitter();
+
+    // Declaring listener userAdded to myEvent
+    var userAdded = (user) => {
+      console.log("New User Added: " + user);
+    };
+
+    // Listening to myEvent with userAdded
+    eventEmitter.addListener("myEvent", userAdded);
+
+    // Listing listeners
+    console.log(eventEmitter.listeners("myEvent"));
+
+    // Triggering myEvent
+    eventEmitter.emit("myEvent", user);
+
     res.json({
       status: true,
       message: "User Created Successfully.",

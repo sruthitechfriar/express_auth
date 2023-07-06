@@ -12,6 +12,7 @@ dotenv.config();
 const app = express();
 app.set("view engine", "ejs");
 const port = process.env.PORT || 3000;
+const hostname = process.env.HOST || "localhost";
 
 //Importing mongodb connection
 connectDB();
@@ -20,13 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Rendering index page
-
 app.get("/", (req, res) => {
   res.render("index");
 });
 
 //Swagger setup
-
 const options = {
   definition: {
     openapi: "3.1.0",
@@ -48,21 +47,29 @@ const options = {
     servers: [
       {
         url: "http://localhost:3000/api",
-        description: "Local server", 
-      }
+        description: "Local server",
+      },
     ],
   },
   apis: ["./controllers/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
-app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(specs,{ explorer: true }));
+app.use(
+  "/api/documentation",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, { explorer: true })
+);
 
 //Application routes
-
 app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);
 
+//Mongoose error handling
 app.use(notFound);
 app.use(errorHandler);
-app.listen(port);
+
+//Server listen
+app.listen(port, hostname, () => {
+  console.log(`Server is running at http://${hostname}:${port}/`);
+});
