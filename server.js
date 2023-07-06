@@ -7,7 +7,7 @@ import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
-import { sendEmail } from "./scheduler/sendEmail.js";
+import { testCron } from "./scheduler/testCron.js";
 
 dotenv.config();
 const app = express();
@@ -63,7 +63,7 @@ app.use(
 );
 
 // Call the cron job function to start the job
-sendEmail();
+testCron();
 
 //Application routes
 app.use("/api", authRoutes);
