@@ -66,10 +66,6 @@ app.use(
 // Call the cron job function to start the job
 testCron();
 
-//Seeder
-
-permissionSeeder();
-
 //Application routes
 app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);

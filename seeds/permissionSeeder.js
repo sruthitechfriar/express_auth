@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Permission from "../models/permission.js";
 
 const permissionSeeder = () => {

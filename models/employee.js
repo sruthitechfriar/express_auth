@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-const userSchema = mongoose.Schema(
+const employeeSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -20,12 +20,6 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    guard: {
-      type: String,
-      enum: ['admin', 'user', 'guest'],
-      default: 'user',
-      required: true,
-    },
   },
   {
     timestamps: true,
@@ -33,7 +27,7 @@ const userSchema = mongoose.Schema(
 );
 
 // Encrypt password using bcrypt
-userSchema.pre("save", async function (next) {
+employeeSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -42,9 +36,9 @@ userSchema.pre("save", async function (next) {
 });
 //compare the hashed password with the password that the user sends in the request.
 
-userSchema.methods.matchPassword = async function (enteredPassword) {
+employeeSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-const User = mongoose.model("User", userSchema);
+const Employee = mongoose.model("Employee", employeeSchema);
 
-export default User;
+export default Employee;
