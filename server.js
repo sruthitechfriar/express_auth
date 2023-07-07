@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import { testCron } from "./scheduler/testCron.js";
+import permissionSeeder from "./seeds/permissionSeeder.js";
 
 dotenv.config();
 const app = express();
@@ -64,6 +65,10 @@ app.use(
 
 // Call the cron job function to start the job
 testCron();
+
+//Seeder
+
+permissionSeeder();
 
 //Application routes
 app.use("/api", authRoutes);
