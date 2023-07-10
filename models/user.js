@@ -22,7 +22,6 @@ const userSchema = mongoose.Schema(
     },
     guard: {
       type: String,
-      enum: ['admin', 'user', 'guest'],
       default: 'user',
       required: true,
     },

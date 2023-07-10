@@ -1,23 +1,9 @@
 import asyncHandler from "express-async-handler";
 import { make, Password } from "simple-body-validator";
 
-const saveUserValidation = asyncHandler(async (req, res,next) => {
+const createCategoryValidation = asyncHandler(async (req, res, next) => {
   const rules = {
     name: "required|string|min:3",
-    email: "required|email",
-    password: [
-      "required",
-      "confirmed",
-      Password.create().min(8).mixedCase().numbers().symbols(),
-    ],
-    password_confirmation: [
-      "required",
-      Password.create().min(8).mixedCase().numbers().symbols(),
-    ],
-  };
-
-  const messages = {
-    "name.min": "The name field is too short.",
   };
 
   const validator = make()
@@ -31,4 +17,4 @@ const saveUserValidation = asyncHandler(async (req, res,next) => {
   }
   next();
 });
-export { saveUserValidation };
+export { createCategoryValidation };

@@ -20,6 +20,11 @@ const employeeSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    guard: {
+      type: String,
+      default: "admin",
+      required: true,
+    },
   },
   {
     timestamps: true,

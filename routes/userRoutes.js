@@ -1,19 +1,25 @@
 import express from "express";
 import {
+  addEmployee,
   deleteUser,
   getUserProfile,
   listUsers,
+  logoutUser,
   updateUserProfile,
 } from "../controllers/userController.js";
-import { protect } from "../middleware/authMiddleware.js";
-import { deleteUserValidation } from "../requests/user/deleteUserRequest.js";
-import { updateUserValidation } from "../requests/user/updateUserRequest.js";
+import { checkGuard, employeeAuth } from "../middleware/authMiddleware.js";
+import { deleteUserValidation } from "../requests/employee/deleteUserRequest.js";
+import { updateUserValidation } from "../requests/employee/updateUserRequest.js";
+import { saveUserValidation } from "../requests/employee/saveUserRequest.js";
 
 const router = express.Router();
 
-router.route("/get").get(protect, getUserProfile);
-router.route("/update").post(protect, updateUserValidation, updateUserProfile);
-router.route("/delete").post(protect, deleteUserValidation, deleteUser);
-router.route("/list").get(protect, listUsers);
+router.route("/add").post(employeeAuth, addEmployee);
+router.route("/get").get(employeeAuth, getUserProfile);
+router.route("/update").post(employeeAuth, updateUserValidation, updateUserProfile);
+router.route("/delete").post(employeeAuth, deleteUserValidation, deleteUser);
+router.route("/list").get(employeeAuth, listUsers);
+router.route("/logout").post(employeeAuth, logoutUser);
+
 
 export default router;

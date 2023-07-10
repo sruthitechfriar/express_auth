@@ -68,7 +68,7 @@ testCron();
 
 //Application routes
 app.use("/api", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/employees", userRoutes);
 
 //Mongoose error handling
 app.use(notFound);
